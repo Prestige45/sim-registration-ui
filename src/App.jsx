@@ -33,7 +33,7 @@ function App() {
 
     try {
       // Send the data to your Python FastAPI backend!
-      const response = await fetch('https://sim-anomaly-api.onrender.com', {
+      const response = await fetch('https://sim-anomaly-api.onrender.com/api/verify', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
