@@ -29,10 +29,9 @@ function App() {
       return;
     }
 
-    setStatus('loading');
+    setStatus('loading');   
 
     try {
-      // Send the data to your Python FastAPI backend!
       const response = await fetch('https://sim-anomaly-api.onrender.com/api/verify', {
         method: 'POST',
         headers: {
@@ -51,7 +50,6 @@ function App() {
 
       const data = await response.json();
 
-      // Update the UI based on Python's decision
       setStatus(data.status);
       
       if (data.status === 'error_nin' || data.status === 'error_fuzzy') {
@@ -74,82 +72,84 @@ function App() {
   };
 
   return (
-    <div className="app-container">
-      <div className="card">
+    <div className="app-layout">
+      <div className="enterprise-card">
         
-        <div className="header">
-          <div className="header-icon">📡</div>
-          <h1 className="title">AI-Driven SIM Registration Portal</h1>
+        <div className="card-header">
+          <svg className="header-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+          </svg>
+          <h1 className="title">SIM Registration Portal</h1>
           <p className="subtitle">National Security & Demographic Verification Engine</p>
         </div>
 
-        {status === 'idle' && (
-          <form onSubmit={handleRegister}>
-            <div className="form-group">
-              <label className="form-label">First Name</label>
-              <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} className="form-input" placeholder="e.g. Aminu" required />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Last Name</label>
-              <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} className="form-input" placeholder="e.g., Abdulazeez" required />
-            </div>
-            <div className="form-group">
-              <label className="form-label">National Identification Number (NIN)</label>
-              <input type="text" name="nin" value={formData.nin} onChange={handleInputChange} maxLength={11} className="form-input" placeholder="Enter 11-digit identity number" required />
-            </div>
-            <button type="submit" className="btn btn-primary">Verify & Register SIM</button>
-          </form>
-        )}
-
-        {status === 'loading' && (
-          <div className="spinner">
-            <div className="spin-icon">🔄</div>
-            <p>Analyzing demographics across central database...</p>
-          </div>
-        )}
-
-        {status === 'success' && (
-          <div className="alert-success">
-            <h3 style={{margin: '0 0 10px 0'}}>✅ Registration Approved</h3>
-            <p><strong>Status:</strong> Unique Identity Verified.</p>
-            <p>No suspicious similarities or duplicate entries found in the national directory. The SIM profile has been provisioned successfully.</p>
-            <button onClick={resetForm} className="btn btn-success">Register Another SIM</button>
-          </div>
-        )}
-
-        {status === 'error_nin' && (
-          <div className="alert-error">
-            <h3 style={{margin: '0 0 10px 0'}}>❌ Registration Blocked: Identity Fraud</h3>
-            <p><strong>Reason:</strong> Deterministic match failed. The provided National Identification Number (NIN) is already mapped to an active user profile.</p>
-            <div style={{marginTop: '10px'}}>
-              <strong>Conflicting Central Record:</strong>
-              <div className="code-block">
-                Name: {conflictingRecord?.name}<br />
-                NIN: {conflictingRecord?.nin}
+        <div className="card-body">
+          {status === 'idle' && (
+            <form onSubmit={handleRegister} className="registration-form">
+              <div className="form-group">
+                <label className="form-label">First Name</label>
+                <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} className="form-input" placeholder="e.g. Aminu" required />
               </div>
-            </div>
-            <button onClick={resetForm} className="btn btn-danger">Return to Form</button>
-          </div>
-        )}
-
-        {status === 'error_fuzzy' && (
-          <div className="alert-error">
-            <h3 style={{margin: '0 0 10px 0'}}>❌ Registration Blocked: Fuzzy Duplicate</h3>
-            <p><strong>Reason:</strong> Machine learning pattern match triggered. A high semantic similarity was detected, indicating an attempt to bypass validation rules using modified variations of existing credentials.</p>
-            <p style={{margin: '10px 0 5px 0'}}><strong>AI Anomaly Match Score:</strong> {matchScore}% Similarity</p>
-            <div>
-              <strong>Suspected Existing Target Profile:</strong>
-              <div className="code-block">
-                Name: {conflictingRecord?.name}<br />
-                NIN: {conflictingRecord?.nin}
+              <div className="form-group">
+                <label className="form-label">Last Name</label>
+                <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} className="form-input" placeholder="e.g., Abdulazeez" required />
               </div>
-            </div>
-            <button onClick={resetForm} className="btn btn-danger">Return to Form</button>
-          </div>
-        )}
+              <div className="form-group">
+                <label className="form-label">National Identification Number (NIN)</label>
+                <input type="text" name="nin" value={formData.nin} onChange={handleInputChange} maxLength={11} className="form-input" placeholder="Enter 11-digit identity number" required />
+              </div>
+              <button type="submit" className="btn-primary">Authenticate & Register</button>
+            </form>
+          )}
 
-        <div className="footer">
-          B.Tech Final Year Project | Federal University of Technology, Minna | Student: Abdulazeez Aminu
+          {status === 'loading' && (
+            <div className="loading-state">
+              <div className="custom-spinner"></div>
+              <h3 className="loading-title">Analyzing Demographics</h3>
+              <p className="loading-text">Cross-referencing TF-IDF vectors with central database...</p>
+            </div>
+          )}
+
+          {status === 'success' && (
+            <div className="status-banner banner-success">
+              <div className="banner-icon">✓</div>
+              <h3>Registration Approved</h3>
+              <p>Unique Identity Verified. No suspicious anomalies or duplicate entries found.</p>
+              <button onClick={resetForm} className="btn-outline-success">Process Next Customer</button>
+            </div>
+          )}
+
+          {status === 'error_nin' && (
+            <div className="status-banner banner-danger">
+              <div className="banner-icon">!</div>
+              <h3>Identity Fraud Blocked</h3>
+              <p>Deterministic match failed. The provided NIN is already mapped to an active user profile.</p>
+              <div className="conflict-box">
+                <span className="conflict-label">Conflicting Record:</span>
+                <span className="conflict-data">{conflictingRecord?.name} | NIN: {conflictingRecord?.nin}</span>
+              </div>
+              <button onClick={resetForm} className="btn-outline-danger">Acknowledge & Return</button>
+            </div>
+          )}
+
+          {status === 'error_fuzzy' && (
+            <div className="status-banner banner-danger">
+               <div className="banner-icon">!</div>
+              <h3>Fuzzy Duplicate Blocked</h3>
+              <p>Machine learning pattern triggered. High semantic similarity detected indicating potential credential manipulation.</p>
+              <div className="match-score">Anomaly Match Score: {matchScore}%</div>
+              <div className="conflict-box">
+                <span className="conflict-label">Target Profile:</span>
+                <span className="conflict-data">{conflictingRecord?.name} | NIN: {conflictingRecord?.nin}</span>
+              </div>
+              <button onClick={resetForm} className="btn-outline-danger">Acknowledge & Return</button>
+            </div>
+          )}
+        </div>
+
+        <div className="card-footer">
+          B.Tech Final Year Project | Federal University of Technology, Minna<br/>
+          <strong>Student: Abdulazeez Aminu</strong>
         </div>
       </div>
     </div>
